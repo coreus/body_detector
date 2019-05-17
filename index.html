@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/posenet"></script>
+
+<style type="text/css">
+
+#camera{
+width: 640px;
+height:480px;
+position:relative;
+}
+body{
+  overflow:hidden;
+}
+canvas {
+  height: 480px;
+  width: 640px;
+}
+.board{
+  width:1280px;
+  height:960px;
+  transform: rotateY(180deg);
+}
+
+</style>
+
+</head>
+
+<body>
+<div id="camera">
+  <video id="cam" class="board" style="display:none;" autoplay></video>
+  <canvas id="output" class="board" width="640px" height="480px"></canvas>
+</div>
+
+
+<script src="./bodydetector.js"></script>
+<script>
+    const canvas = document.getElementById('output');
+    const ctx = canvas.getContext('2d');
+    
+    var drawer = function draw(detectedBody){
+        ctx.drawImage(CamBodyDetector.getVideoElement(), 0, 0,640,480);
+        headPosition = detectedBody.calculateHeadPosition();
+        ctx.translate(CamBodyDetector.getVideoElement().width/2, CamBodyDetector.getVideoElement().height/2);
+        ctx.rotate(detectedBody.calculateFaceAngle());
+        ctx.translate(-CamBodyDetector.getVideoElement().width/2, -CamBodyDetector.getVideoElement().height/2);
+        ctx.beginPath();
+        ctx.rect(headPosition[0], headPosition[1],headPosition[2],headPosition[3]);
+        ctx.stroke();
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        
+        
+    }
+
+    CamBodyDetector.start(640,480,drawer);
+
+</script>
+</body>
+
+</html>
+
